@@ -1,0 +1,19 @@
+Y ~ b1 * M1 + b2 * M2 + c1 * X1 + c2 * X2 + c3 * C
+M1 ~ a1 * X1 + a2 * X2 + a5 * C
+M2 ~ a3 * X1 + a4 * X2 + a6 * C
+
+indirect1 := a1 * b1
+indirect2 := a3 * b2
+indirect3 := a2 * b1
+indirect4 := a4 * b2
+
+con1 := a1 * b1 - a3 * b2
+con2 := a2 * b1 - a4 * b2
+con3 := (a1-a2) * b1
+con4 := (a3-a4) * b2
+
+total1 := c1 + (a1 * b1) + (a3 * b2)
+total2 := c2 + (a2 * b1) + (a4 * b2)
+total3 := c3 + (a5 * b1) + (a6 * b2)
+
+M1 ~~ M2
