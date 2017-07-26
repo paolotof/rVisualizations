@@ -1,0 +1,19 @@
+diet ~ b1 * fear + b2 * hope + c1 * pd + c2 * ps + c3 * bmi
+fear ~ a1 * pd + a2 * ps + a5 * bmi
+hope ~ a3 * pd + a4 * ps + a6 * bmi
+
+ind_pdFear := a1 * b1
+ind_pdHope := a3 * b2
+ind_psFear := a2 * b1
+ind_psHope := a4 * b2
+
+fearVsHope_pd := ind_pdFear - ind_pdHope
+fearVsHope_ps := ind_psFear - ind_psHope
+pdVsPsThroughFear := ind_pdFear - ind_psFear
+pdVsPsThroughHope := ind_pdHope - ind_psHope
+
+tot_dietPc := c1 + ind_pdFear + ind_pdHope
+tot_dietPs := c2 + ind_psFear + ind_psHope
+tot_dietBmi := c3 + (a5 * b1) + (a6 * b2)
+
+fear ~~ hope
