@@ -30,7 +30,7 @@ multipleMediation <- '
 	indirect1 := a1 * b1
 	indirect2 := a2 * b2
 	contrast := indirect1 - indirect2
-	total    := c + (a1 * b1) + (a1 * b1)
+	total    := c + (a1 * b1) + (a2 * b2)
 	M1 ~~ M2
 '
 fit <- sem(model = multipleMediation, data = Data)
@@ -45,7 +45,7 @@ constrainedMediation <- '
 	M2 ~ a2 * X
 	indirect1 := a1 * b1
 	indirect2 := a2 * b2
-	total    := c + (a1 * b1) + (a1 * b1)
+	total    := c + (a1 * b1) + (a2 * b2)
 	# covariances
 	M1 ~~ M2
 	# constrain
