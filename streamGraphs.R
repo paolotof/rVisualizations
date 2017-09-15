@@ -174,3 +174,13 @@ streamGraph(computeSmoothedStacks(values, 'newWiggle'), cols, 'Smoothed')
 par(mfrow = c(1, 1))
 # dev.off()
 # source('streamGraphs.R')
+
+normalize <- function(dat){
+	minV <- apply(dat, 2, min)
+	minV <- matrix(rep(minV, each = dim(dat)[1]),
+		nrow = dim(dat)[1], ncol = dim(dat)[2])
+	maxV <- apply(dat, 2, max)
+	maxV <- matrix(rep(maxV, each = dim(dat)[1]),
+		nrow = dim(dat)[1], ncol = dim(dat)[2])
+	normalized <- (dat-minV)/(maxV-minV)
+}
