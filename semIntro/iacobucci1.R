@@ -1,6 +1,9 @@
 print("Import data")
-
-covMat <- read.table('~/Dropbox/R/sem/iacobucci/iacobucci2.txt')
+#rm(list = ls()) # uncomment to clear all
+# to run all the script at once copy line below from after '#' and paste to console 
+# source('iacobucci1.R') # DO NOT UNCOMMENT, will make your file recursive and
+# you will end up with a infite loop.
+covMat <- read.table('iacobucci2.txt')
 
 require(lavaan)
 costumerQuality <- lav_matrix_lower2full(t(covMat))
@@ -60,8 +63,12 @@ print("Plot path diagram")
 #     residuals = FALSE # remove recurrent loop on node itself
 #     exoCov = FALSE # do not print the covariances among latent variables
 #     whatLabels = 'est' # print estimates on paths
-semPaths(mdlFit, rotation = 2, whatLabels = 'est', 
-  nCharNodes = 0, residuals = FALSE, exoCov = FALSE)
-title("Fig. 1. Confirmatory factor analysis.")
+if (require('semPlot')){
+  print("please install semPlot to plot this graph")
+  }else{
+  semPaths(mdlFit, rotation = 2, whatLabels = 'est', 
+    nCharNodes = 0, residuals = FALSE, exoCov = FALSE)
+  title("Fig. 1. Confirmatory factor analysis.")}
+  
 #     replace labels in paths with standardized estimates
 # semPaths(mdlFit, rotation = 2, whatLabels = 'std', nCharNodes = 0, residuals = FALSE, exoCov = FALSE)
