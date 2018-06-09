@@ -23,13 +23,18 @@ repeaT =~ r1 + r2 + r3"
 mdlFit <- cfa(mdlStx, sample.cov=costumerQuality, sample.nobs=n)
 
 print("Fit measurement model")
-print(paste(
-  "chi^2_{", fitMeasures(mdlFit, "df"), 
-  "} =", format(fitMeasures(mdlFit, "chisq"), nsmall = 2, digits = 2), 
-  ", (p =", format(fitMeasures(mdlFit, "pvalue"), digits = 1), 
-  "), CFI =", format(fitMeasures(mdlFit, "cfi"), digits = 2), 
-  ", SRMR =", format(fitMeasures(mdlFit, "srmr"), digits = 2)
-))
+iacobucciOutput <- function(mdlFit){
+# this is a function wrapping the commands to print the output a la Iacobucci
+# it's only function is to avoid typing the same commands 3 times
+	print(paste(
+		"chi^2_{", fitMeasures(mdlFit, "df"), 
+		"} =", format(fitMeasures(mdlFit, "chisq"), nsmall = 2, digits = 2), 
+		", (p =", format(fitMeasures(mdlFit, "pvalue"), digits = 1), 
+		"), CFI =", format(fitMeasures(mdlFit, "cfi"), digits = 2), 
+		", SRMR =", format(fitMeasures(mdlFit, "srmr"), digits = 2)
+	))
+}
+iacobucciOutput(mdlFit)
 
 print("Factor loadings and significance")
 estVals <- parameterEstimates(mdlFit, standardized = TRUE)
@@ -72,3 +77,61 @@ if (require('semPlot')){
   
 #     replace labels in paths with standardized estimates
 # semPaths(mdlFit, rotation = 2, whatLabels = 'std', nCharNodes = 0, residuals = FALSE, exoCov = FALSE)
+
+print("Structural equation modeling")
+semStx <- "
+repeaT ~ csat 
+value ~ quality 
+csat ~ quality
+value ~ cost
+repeaT ~ cost
+csat ~ value 
+"
+
+semFit <- sem(semStx, sample.cov=inspect(mdlFit, "cor.lv"), 
+  sample.nobs=n, std.lv=FALSE)
+iacobucciOutput(semFit)
+
+print("## xtract model output and print as Iacobucci")
+estVals <- parameterEstimates(semFit)
+require(xtable)
+xtab2 <- xtable(
+  # extract paths estimate by indexing the 'op' column with the tilde symbol
+  # e.g.: estVals[estVals$op == '~', ]
+  # create a new data.frame containing in the column:
+  data.frame(
+  # 1 the predicted construct
+    b = estVals[estVals$op == '~', 'rhs'],
+  # 2 the arrow relating the constucts
+    rel = "->",
+  # 3 the construct used as predictors
+    e = estVals[estVals$op == '~', 'lhs'],
+  # 4 the estimate of the path with a star if significant
+    vals = paste0(
+      format(estVals[estVals$op == '~', 'est'], digits = 1), 
+      ifelse(estVals[estVals$op == '~', 'pvalue'] < .5, '*', ''))
+  ))
+print(xtab2, include.rownames = FALSE)
+
+print("## plot path diagram as Iacobucci")
+# save path diagram to an object so that we can access its attributes
+mdlPlot <- semPaths(semFit, whatLabels = 'std', nCharNodes = 0, 
+  layout = 'tree2', edge.label.cex = 1.2)
+# as the positioning of the boxes  
+mdlPlot$layout
+# and their name 
+mdlPlot$Arguments$label
+# specify new x-y position for variables
+ly<-matrix(c(1, 0,
+  -0.33, 0,
+  0.33, 0,
+  -1, 1,
+  -1, -1), ncol=2, byrow=TRUE)
+# assign new positions to the function generating the path diagram 
+semPaths(semFit, whatLabels = 'std', nCharNodes = 0, layout = ly, 
+  edge.label.cex = 1.2, residuals=FALSE, sizeMan=8)
+# colored graph
+semPaths(semFit, what = "std",layout=ly, residuals = FALSE, 
+  nCharNodes = 0, edge.label.cex = 1.2, sizeMan = 8)
+
+# source(iacobucci1.R)
